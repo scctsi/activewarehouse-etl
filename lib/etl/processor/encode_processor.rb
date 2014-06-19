@@ -29,8 +29,8 @@ module ETL #:nodoc:
         @target_encoding = configuration[:target_encoding]
         raise ControlError, "Source and target file cannot currently point to the same file" if source_file == target_file
         begin
-          @iconv = Iconv.new(target_encoding,source_encoding)
-        rescue Iconv::InvalidEncoding
+          @encoded_string = String.new.encode(target_encoding,source_encoding)
+        rescue Encoding::ConverterNotFoundError
           raise ControlError, "Either the source encoding '#{source_encoding}' or the target encoding '#{target_encoding}' is not supported"
         end
       end
@@ -43,7 +43,7 @@ module ETL #:nodoc:
           #puts "Opening #{target_file}"
           File.open(target_file,'w') do |target|
             source.each_line do |line|
-              target << @iconv.iconv(line)
+              target << line.encode(source_encoding, target_encoding)
             end
           end
         end
