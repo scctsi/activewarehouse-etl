@@ -6,3 +6,5 @@ rdoc
 .bundle
 *.gem
 *.lock
+.ruby-gemset
+.ruby-version
