@@ -1,11 +1,11 @@
 $:.unshift(File.dirname(__FILE__) + '/../lib')
 $:.unshift(File.dirname(__FILE__))
 
-require 'test/unit'
+require 'minitest/autorun'
 require 'pp'
 require 'etl'
-require 'shoulda'
-require 'flexmock/test_unit'
+# require 'shoulda'
+# require 'flexmock/test_unit'
 
 raise "Missing required DB environment variable" unless ENV['DB']
 

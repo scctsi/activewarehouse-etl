@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/test_helper'
 
-class BatchTest < Test::Unit::TestCase
+class BatchTest < Minitest::Test
   attr_reader :file, :db_yaml, :engine
   def setup
     @file =  File.dirname(__FILE__) + '/all.ebf'
