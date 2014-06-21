@@ -2,6 +2,7 @@ require 'bundler'
 Bundler::GemHelper.install_tasks
 require 'rake'
 require 'rake/testtask'
+require 'yaml'
 
 def system!(cmd)
   puts cmd
@@ -18,7 +19,12 @@ namespace :ci do
     Bundler.with_clean_env do
       ENV['BUNDLE_GEMFILE'] = File.expand_path(args[:gemfile] || (File.dirname(__FILE__) + '/test/config/gemfiles/Gemfile.rails-3.2.x'))
       ENV['DB'] = args[:db] || 'mysql2'
+      c = YAML.load(ERB.new(File.read(File.dirname(__FILE__) + '/test/config/database.yml')).result)
+      puts c
+      puts "hello"
       system! "bundle install"
+      # ActiveRecord::Tasks::DatabaseTasks.database_configuration = YAML.load(ERB.new(File.read(File.dirname(__FILE__) + '/test/config/database.yml')).result)
+      # ActiveRecord::Base.configurations = YAML.load(ERB.new(File.read(File.dirname(__FILE__) + '/test/config/database.yml')).result)
       system! "bundle exec rake db:create"
       system! "bundle exec rake db:create RAILS_ENV=etl_execution"
       system! "bundle exec rake db:schema:load"
