@@ -12,6 +12,10 @@ def declare_gems(activerecord_version)
     gem 'mysql2', :git => 'https://github.com/activewarehouse/mysql2.git'
   end
 
+  if activerecord_version >= '4.0'
+    gem 'protected_attributes', '~> 1.0.8'
+  end
+
   gem 'pg'
   gem 'activerecord-sqlserver-adapter'
 
@@ -28,4 +32,6 @@ def declare_gems(activerecord_version)
   gem 'roo'
 
   gem 'standalone_migrations', '1.0.5'
+
+  gem 'pry'
 end

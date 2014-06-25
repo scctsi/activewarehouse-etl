@@ -19,15 +19,34 @@ namespace :ci do
     Bundler.with_clean_env do
       ENV['BUNDLE_GEMFILE'] = File.expand_path(args[:gemfile] || (File.dirname(__FILE__) + '/test/config/gemfiles/Gemfile.rails-3.2.x'))
       ENV['DB'] = args[:db] || 'mysql2'
-      c = YAML.load(ERB.new(File.read(File.dirname(__FILE__) + '/test/config/database.yml')).result)
-      puts c
-      puts "hello"
+
+      ## Rails 3.2.x
+      # system! "bundle install"
+      # system! "bundle exec rake db:create"
+      # system! "bundle exec rake db:create RAILS_ENV=etl_execution"
+      # system! "bundle exec rake db:schema:load"
+      # system! "bundle exec rake"
+
+      ## Rails 4.0.x
+      # db_config = YAML.load(ERB.new(File.read(File.dirname(__FILE__) + '/test/config/database.yml')).result)
       system! "bundle install"
+
       # ActiveRecord::Tasks::DatabaseTasks.database_configuration = YAML.load(ERB.new(File.read(File.dirname(__FILE__) + '/test/config/database.yml')).result)
       # ActiveRecord::Base.configurations = YAML.load(ERB.new(File.read(File.dirname(__FILE__) + '/test/config/database.yml')).result)
-      system! "bundle exec rake db:create"
-      system! "bundle exec rake db:create RAILS_ENV=etl_execution"
-      system! "bundle exec rake db:schema:load"
+
+      system! %Q{bundle exec ruby -e "require %(yaml); require %(active_record); require %(erb); db_config = YAML.load(ERB.new(File.read(File.dirname(__FILE__) + '/test/config/database.yml')).result); ActiveRecord::Tasks::DatabaseTasks.create_current(db_config['postgresql']); ActiveRecord::Tasks::DatabaseTasks.create_current(db_config['operational_database']); ActiveRecord::Tasks::DatabaseTasks.create_current(db_config['data_warehouse']); ActiveRecord::Tasks::DatabaseTasks.create_current(db_config['etl_execution']); ActiveRecord::Tasks::DatabaseTasks.db_dir = 'db'; file = File.join(ActiveRecord::Tasks::DatabaseTasks.db_dir, 'schema.rb'); file_val = File.exist?(file) ? load(file) : nil"}
+
+      
+
+# ActiveRecord::Tasks::DatabaseTasks.migrations_paths ||= ['db/migrate']; ActiveRecord::Migrator.migrations_paths = ActiveRecord::Tasks::DatabaseTasks.migrations_paths
+
+      # ActiveRecord::Tasks::DatabaseTasks.db_dir = 'db'
+      # file = File.join(ActiveRecord::Tasks::DatabaseTasks.db_dir, 'schema.rb')
+      # if File.exist?(file)
+      #   load(file)
+      # else
+      #   abort %{#{file} doesn't exist yet. Run `rake db:migrate` to create it, then try again. If you do not intend to use a database, you should instead alter #{Rails.root}/config/application.rb to limit the frameworks that will be loaded.}
+        # end
       system! "bundle exec rake"
     end
   end

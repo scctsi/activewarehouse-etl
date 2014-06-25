@@ -13,10 +13,14 @@ mysql2: &mysql2
   cast: false
 
 postgresql: &postgresql
+  host: localhost
   adapter: postgresql
   database: activewarehouse_etl_test
   username: postgres
-
+  encoding: unicode
+  password: password
+  pool: 5
+  timeout: 5000
 # TODO - refactor test to avoid using 2 databases maybe?
 operational_database:
   <<: *<%= ENV['DB'] %>
